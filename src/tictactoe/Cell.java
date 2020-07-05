@@ -12,6 +12,10 @@ public class Cell {
         return value;
     }
 
+    public boolean isEmpty() {
+        return value == ' ';
+    }
+
     public void setValue(char value) {
         this.value = value;
     }

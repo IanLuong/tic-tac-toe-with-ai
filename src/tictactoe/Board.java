@@ -12,7 +12,6 @@ public class Board {
 
     private void addCellsToBoard(String input) {
         char[] oldCells = input.toCharArray();
-        System.out.println(oldCells);
         int cellCounter = 0;
 
         for (int i = 0; i < 3; i++) {
@@ -23,12 +22,28 @@ public class Board {
         }
     }
 
+    public void clearBoard() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                cells[i][j].setValue(' ');
+            }
+        }
+    }
+
+    public Cell[][] getCells() {
+        return cells;
+    }
+
     public String[] getAcceptedValues() {
         return acceptedValues;
     }
 
     public boolean isRunning() {
         return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 
     public boolean isxTurn() {
@@ -56,10 +71,7 @@ public class Board {
         cells[x][y].setValue(value);
     }*/
 
-    public boolean setCellWithUserInput(char value, String input) {//String col, String row) {
-
-        System.out.println(input);
-
+    public boolean setCellWithUserInput(char value, String input) {
         if (!input.matches("[0-9]+\\s[0-9]+")) {
             System.out.println("You should enter numbers!");
             return false;
@@ -73,13 +85,31 @@ public class Board {
             }
 
             int newRow = processRow(intRow - 1);
-            if (cells[newRow][intCol - 1].getValue() == '_') {
-                cells[newRow][intCol - 1].setValue(value);
+            intCol -=  1;
+
+            if (cells[newRow][intCol].isEmpty()) {
+                cells[newRow][intCol].setValue(value);
                 return true;
             } else {
                 System.out.println("This cell is occupied! Choose another one!");
                 return false;
             }
+        }
+    }
+
+    public boolean setCellWithAIInput(char value, String input) {
+        int intCol = input.charAt(0) - '0';
+        int intRow = input.charAt(2) - '0';
+        //int newRow = processRow(intRow - 1);
+        //intCol -=  1;
+
+        //if (cells[newRow][intCol].isEmpty()) {
+        //    cells[newRow][intCol].setValue(value);
+        if (cells[intRow][intCol].isEmpty()) {
+            cells[intRow][intCol].setValue(value);
+            return true;
+        } else {
+        return false;
         }
     }
 
@@ -109,26 +139,27 @@ public class Board {
     public boolean checkWon(char value) {
         for (int i = 0; i < cells.length; i++) {
             //checks the rows
-            if(cells[i][0].getValue() == value && cells[i][1].getValue() == value && cells[i][2].getValue() == value) {
+            if (cells[i][0].getValue() == value && cells[i][1].getValue() == value && cells[i][2].getValue() == value) {
                 return true;
             }
             //checks the columns
-            if(cells[0][i].getValue() == value && cells[1][i].getValue() == value && cells[2][i].getValue() == value) {
-                return true;
-            }
-            //checks diagonals
-            if(cells[0][0].getValue() == value && cells[1][1].getValue() == value && cells[2][2].getValue() == value ||
-                    cells[0][2].getValue() == value && cells[1][1].getValue() == value && cells[2][0].getValue() == value) {
+            if (cells[0][i].getValue() == value && cells[1][i].getValue() == value && cells[2][i].getValue() == value) {
                 return true;
             }
         }
-        return false;
+        //checks diagonals
+        if (cells[0][0].getValue() == value && cells[1][1].getValue() == value && cells[2][2].getValue() == value ||
+                cells[0][2].getValue() == value && cells[1][1].getValue() == value && cells[2][0].getValue() == value) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean checkFinished() {
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
-                if(cells[i][j].getValue() == '_') {
+                if(cells[i][j].isEmpty()) {
                     return false;
                 }
             }
@@ -154,8 +185,18 @@ public class Board {
         } else if (checkFinished()) {
             System.out.println("Draw");
             running = false;
-        } else {
-            System.out.println("Game not finished");
+        } //else {
+          //  System.out.println("Game not finished");
+        //}
+    }
+
+    public String getBoardStateAsString() {
+        StringBuilder returnString = new StringBuilder();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                returnString.append(cells[i][j]);
+            }
         }
+        return returnString.toString();
     }
 }
